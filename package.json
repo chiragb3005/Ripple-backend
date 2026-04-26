@@ -9,5 +9,8 @@
   "scripts": {
     "test": "backend, javascript, chai, biscuits",
     "start": "node index.js"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.14"
   }
 }

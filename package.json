@@ -7,7 +7,6 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "backend, javascript, chai, biscuits",
     "start": "node index.js",
     "dev": "nodemon src/index.js"
   },

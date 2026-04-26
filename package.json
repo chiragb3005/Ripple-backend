@@ -1,0 +1,13 @@
+{
+  "name": "ripple_backend",
+  "version": "1.0.0",
+  "description": "a backend for the upcoming speacial and mega full stack project",
+  "license": "ISC",
+  "author": "Chirag Bansal",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "backend, javascript, chai, biscuits",
+    "start": "node index.js"
+  }
+}

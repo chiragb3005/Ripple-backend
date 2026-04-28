@@ -1,10 +1,26 @@
 import dotenv from 'dotenv'
 import connectDB from './db/index.js'
+import app from './app.js'
 
-dotenv.config({ path: './' })
+dotenv.config({
+    path: './env'
+})
 
-
+// exexcuting the connectDB to get connected with DB
 connectDB()
+    .then(() => {
+        const server = app.listen(process.env.PORT || 8000, () => {
+            console.log(`Application is working on port: ${process.env.PORT}`)
+        })
+        // if DB connects and server problem then this error came
+        server.on("error", (error) => {
+            console.log("ERROR IN SERVER : ", error)
+        })
+    })
+    // if DB not able to connect this error came
+    .catch((error) => {
+        console.log('mongoDB Atlas connection FAILED !! : ', error)
+    })
 
 
 

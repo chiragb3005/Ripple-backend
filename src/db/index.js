@@ -1,5 +1,7 @@
-import mongoose from "mongoose";
+// in this file im connecting to my data base
+
 import { DB_NAME } from "../constants.js";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 // purely connceting to DB
 

@@ -2,9 +2,17 @@
 import { asyncHandler } from '../utils/asyncHandler.js'
 
 const registerUser = asyncHandler(async (req, res) => {
-    res.status(200).json({
-        message: "chal gya bina error ke !! YAY ...."
-    })
+    // get user details from frontend
+    // validation (no username, email format and other) -- here not empty
+    // check if user already exists -- check by username and email
+    // files are there that is avatar and cover image
+    // upload them in clodinary
+    // create user object -- create entry in DB
+    // remove password and refresh token from response
+    // check for user creation
+    // return response to frontend // if not cretaed throw error
+
+
 })
 
 export { registerUser }

@@ -19,4 +19,18 @@ app.use(express.static('public'))
 
 app.use(cookieParser())
 
+
+// routes
+
+import { router as userRouter } from './routes/user.route.js';
+
+// as now route is in different file
+// have to use the middleware to go to route
+// instead of app.get  ---  app.use 
+
+// userRouter at /users by middleware
+app.use("/api/v1/users", userRouter)
+
+//http://localhost:8000/api/v1/user/register
+
 export default app;

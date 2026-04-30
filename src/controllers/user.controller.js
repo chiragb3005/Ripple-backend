@@ -28,7 +28,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //     throw new ApiError(400, "full name is required")
     // }
 
-    // asl for user data
+    // ask for user data
     if ([fullname, email, password, username].some((field) => {
         field?.trim() === ""
     })) {
@@ -59,7 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!avatar) {
-        throw new ApiError(400, "Avatar is not present")
+        throw new ApiError(400, "Avatar is not present (Not able to upload on cloudinary)")
     }
 
 

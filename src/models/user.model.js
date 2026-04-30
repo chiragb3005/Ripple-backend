@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { JsonWebTokenError as jwt } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 
@@ -53,9 +53,9 @@ const userSchema = new Schema(
 
 // here im encrypting my pasword 'pre' of movign forward
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next()
+    if (!this.isModified("password")) return next
     this.password = await bcrypt.hash(this.password, 10)
-    next()
+    next
 })
 
 

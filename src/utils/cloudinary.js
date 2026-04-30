@@ -3,7 +3,7 @@
 // then delete it from server which is also called unlink it
 
 import { v2 as cloudinary, v2 } from "cloudinary";
-import fs from 'fs'
+import fs from 'fs/promises'
 // fs is file system 
 
 // this is just the configuration for the cloudinary
@@ -22,11 +22,12 @@ const uploadOnCloudinary = async (localFilePath) => {
 
         // printing a console for deeper knowledge
         console.log("File is uploaded Successfully on cloudinary", response.url)
+        fs.unlinkSync(localFilePath)
         return response
     }
     catch (error) {
         // first if try fails have to unlink the file from server
-        fs.unlink(localFilePath)
+        await fs.unlink(localFilePath)
         return null
     }
 }

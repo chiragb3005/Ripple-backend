@@ -19,8 +19,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
     const { fullname, email, password, username } = req.body
-    console.log("email: ", email)
-    console.log("password: ", password)
 
     // simple vs advance method
 
@@ -29,14 +27,14 @@ const registerUser = asyncHandler(async (req, res) => {
     // }
 
     // ask for user data
-    if ([fullname, email, password, username].some((field) => {
+    if ([fullname, email, password, username].some((field) =>
         field?.trim() === ""
-    })) {
+    )) {
         throw new ApiError(400, "field is required")
     }
 
     // ask for uniquness
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ username }, { email }]
     })
 
@@ -45,9 +43,17 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
 
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+    let coverImageLocalPath;
+    if (
+        req.files &&
+        Array.isArray(req.files.coverImage) &&
+        req.files.coverImage.length > 0
+    ) {
+        const coverImageLocalPath = req.files.coverImage[0].path;
+    }
 
 
     if (!avatarLocalPath) {
@@ -57,6 +63,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // uploading will definitely take some time
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+
 
     if (!avatar) {
         throw new ApiError(400, "Avatar is not present (Not able to upload on cloudinary)")
@@ -72,6 +79,8 @@ const registerUser = asyncHandler(async (req, res) => {
         username: username.toLowerCase()
     })
 
+    console.log("password: ", user.password)
+
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     )
@@ -81,7 +90,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // now finally sending the response
-    return res.status(201).json(
+    return res.status(200).json(
         new ApiResponse(200, createdUser, "User is registered successfully")
     )
 })

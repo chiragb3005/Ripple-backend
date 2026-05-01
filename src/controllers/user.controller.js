@@ -268,7 +268,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword, confirmNewPassword } = req.body
 
     // first need user so inside it i can verify the password
-    const user = await User.findById(req.user?.id)
+    const user = await User.findById(req.user?._id)
 
     // getting true false for the password checking
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
@@ -292,11 +292,54 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, "Password Changed Successfully! "))
 
 })
+
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+
+    const user = await User.findOne(req.user)
+
+    return res
+        .status(201)
+        .json(200, user, "current user fetched successfully")
+
+})
+
+// it is always better to make a different method for file updation
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullname, email } = req.body
+
+    if (!(fullname || email)) {
+        throw new ApiError(400, "send any one of fullname or email")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullname,
+                email,
+            }
+        },
+        { new: true }
+
+    ).select("-password")
+
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Account details updated successfully"))
+})
+
+
+
+
 export {
     registerUser,
     loginUser,
     logoutUser,
     refreshAccessToken,
-    changeCurrentPassword,
 
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails
 }

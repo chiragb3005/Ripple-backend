@@ -2,8 +2,8 @@
 // now from local storage to cloudinary
 // then delete it from server which is also called unlink it
 
-import { v2 as cloudinary, v2 } from "cloudinary";
-import fs from 'fs/promises'
+import { v2 as cloudinary } from "cloudinary";
+import fs from 'fs'
 // fs is file system 
 
 // this is just the configuration for the cloudinary
@@ -27,6 +27,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
     catch (error) {
         // first if try fails have to unlink the file from server
+        console.log("Cloudinary error: ", error)
         await fs.unlink(localFilePath)
         return null
     }

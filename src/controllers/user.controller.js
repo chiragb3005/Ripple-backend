@@ -5,6 +5,7 @@ import { User } from '../models/user.model.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import jwt from 'jsonwebtoken'
+import { deleteFromCloudinary } from '../utils/deleteFromCloudinary.js'
 import { response } from 'express'
 
 
@@ -26,9 +27,6 @@ const generateAccessAndRefreshToken = async (userId) => {
         throw new ApiError(500, "Problem in generating Refresh and Access Token")
     }
 }
-
-
-
 
 
 
@@ -340,11 +338,18 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Avatar file is missing")
     }
 
+
+    // getting the old url before uploading the new avatar
+    const oldUser = await User.findById(req.user._id)
+    const oldAvatarUrl = oldUser?.avatar
+
+
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
     if (!avatar.url) {
         throw new ApiError(400, "Error while uploading the avatar ")
     }
+
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
@@ -356,6 +361,10 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password")
 
+    // now after updating deleting the old url form cloudinary
+    if (oldAvatarUrl) {
+        await deleteFromCloudinary(oldAvatarUrl)
+    }
 
     return res
         .status(200)
@@ -369,6 +378,11 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     if (!coverImageLocalPath) {
         throw new ApiError(400, "Cover image is missing")
     }
+
+    // getting the old url before updating new one
+    const oldUser = await User.findById(req.user?._id)
+
+    const oldCoverImage = oldUser?.coverImage
 
     const coverImage = uploadOnCloudinary(coverImageLocalPath)
 
@@ -389,6 +403,11 @@ const updateCoverImage = asyncHandler(async (req, res) => {
             new: true
         }
     ).select("-password")
+
+    // deleting the old url before updating the new one
+    if (oldCoverImage) {
+        await deleteFromCloudinary(oldCoverImage)
+    }
 
     return res
         .status(200)

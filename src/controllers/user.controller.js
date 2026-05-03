@@ -415,6 +415,82 @@ const updateCoverImage = asyncHandler(async (req, res) => {
 
 })
 
+
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+    const { username } = req.params
+
+    if (!username?.trim()) {
+        throw new ApiError(400, "Username is missing")
+    }
+
+    const channel = await User.aggregate([
+        {
+            $match: {
+                // finding the channel with the provided username
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            //making document for subscribers
+            $lookup: {
+                from: "subscriptions",    // here subscriptions is the model name but in plural and small s
+                localField: "_id",
+                foreginField: "channel",
+                as: "subscribers"
+            }
+        },
+        {
+            // making document for channels
+            $lookup: {
+                from: "subscriptions",  // channel is also coming from the same model
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo"
+            }
+        },
+        {
+            // now adding the documents in this pipeline
+            $addFields: {
+                subscriberCount: {
+                    $size: "$subscribers"       // dollar sign cause now it is a field
+                },
+                channelIsSubscribedToCount: {
+                    $size: "$subscribedTo"
+                },
+                // now passing an condition wher we get to subscribe the current channel or not
+                isSubscribed: {
+                    $cond: {
+                        if: { $in: [req.user?._id, "$subscribers.subscribe"] },
+                        then: true,
+                        else: false,
+                    }
+                }
+            }
+        },
+        {
+            // allowing to which fields to see in projection
+            $project: {
+                fullname: 1,
+                username: 1,
+                subscriberCount: 1,
+                channelIsSubscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1
+            }
+        }
+    ])
+
+    // from aggrgate channel comes out to be an array
+    if (!channel?.length) {
+        throw new ApiError(401, "No channel exists with the given username")
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, channel[0], "User channel fetched successfully"))
+})
+
 export {
     registerUser,
     loginUser,

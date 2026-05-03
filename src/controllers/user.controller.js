@@ -525,7 +525,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                                     // this time we have to decide what we want to project
                                     $project: {
                                         fullname: 1,
-                                        username: 1;
+                                        username: 1,
                                         avatar: 1
                                     }
                                 }
